@@ -12,6 +12,4 @@
 
 @property (strong, nonatomic) UIWindow *window;
 
--(UIColor *)colorForIndex:(NSUInteger)index;
-
 @end
