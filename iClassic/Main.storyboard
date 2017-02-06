@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cbR-JK-Lsf">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="V0K-Pb-V7W">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -14,7 +14,7 @@
         <!--Main View Controller-->
         <scene sceneID="Gyr-qT-MPH">
             <objects>
-                <viewController id="cbR-JK-Lsf" customClass="iPCMainViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Player Controller" id="cbR-JK-Lsf" customClass="iPCMainViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YvK-Zy-NMk"/>
                         <viewControllerLayoutGuide type="bottom" id="HxV-Ma-vvS"/>
@@ -115,6 +115,42 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RF1-Pf-9hD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-175" y="487"/>
+        </scene>
+        <!--Permission View Controller-->
+        <scene sceneID="iDj-SC-Ttd">
+            <objects>
+                <viewController id="V0K-Pb-V7W" customClass="iPCPermissionViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fic-Jm-k2n"/>
+                        <viewControllerLayoutGuide type="bottom" id="mne-L5-l2b"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kKy-mU-fkB">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="Guo-YN-7f3">
+                                <rect key="frame" x="169" y="315" width="37" height="37"/>
+                            </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You need to allow iClassic to access your music library before using it." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p2D-TO-bnn">
+                                <rect key="frame" x="30" y="279" width="315" height="21"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Guo-YN-7f3" firstAttribute="centerY" secondItem="kKy-mU-fkB" secondAttribute="centerY" id="GKD-Wg-Z5g"/>
+                            <constraint firstAttribute="trailing" secondItem="p2D-TO-bnn" secondAttribute="trailing" constant="30" id="P6K-WS-ByK"/>
+                            <constraint firstItem="p2D-TO-bnn" firstAttribute="leading" secondItem="kKy-mU-fkB" secondAttribute="leading" constant="30" id="c2S-tf-7XO"/>
+                            <constraint firstItem="Guo-YN-7f3" firstAttribute="centerX" secondItem="kKy-mU-fkB" secondAttribute="centerX" id="d45-1v-fkF"/>
+                            <constraint firstItem="Guo-YN-7f3" firstAttribute="top" secondItem="p2D-TO-bnn" secondAttribute="bottom" constant="15" id="zee-LC-0NA"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Yo-Aa-okB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-175" y="-299"/>
         </scene>
         <!--Display Stack-->
         <scene sceneID="fhd-nO-wK5">

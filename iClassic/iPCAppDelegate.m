@@ -16,6 +16,19 @@
 	
 	[iPCColorsManager sharedInstance];
 	
+	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+	UIViewController *mainController = [storyboard instantiateViewControllerWithIdentifier:@"Player Controller"];;
+	
+	if([MPMediaLibrary authorizationStatus] == MPMediaLibraryAuthorizationStatusAuthorized) {
+		self.window.rootViewController = mainController;
+	} else {
+		[MPMediaLibrary requestAuthorization:^(MPMediaLibraryAuthorizationStatus status) {
+			dispatch_sync(dispatch_get_main_queue(), ^{
+				self.window.rootViewController = mainController;
+			});
+		}];
+	}
+	
 	return YES;
 }
 

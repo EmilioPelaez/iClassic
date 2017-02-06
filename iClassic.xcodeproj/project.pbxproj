@@ -25,6 +25,7 @@
 		C8A0905E1730E293006D1CCD /* iPCSinglePlaylistDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A0905D1730E292006D1CCD /* iPCSinglePlaylistDisplay.m */; };
 		C8A090611731A54E006D1CCD /* iPCStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A090601731A54D006D1CCD /* iPCStatusBar.m */; };
 		C8A090741731EACB006D1CCD /* iPCBatteryView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A090731731EACA006D1CCD /* iPCBatteryView.m */; };
+		C8A0F3B01E483B5100F5C0A4 /* iPCPermissionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A0F3AF1E483B5100F5C0A4 /* iPCPermissionViewController.m */; };
 		C8A36EA01B2B6DB30011E3F1 /* iPCPlayPauseView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A36E9F1B2B6DB30011E3F1 /* iPCPlayPauseView.m */; };
 		C8A36EA31B2B6DC70011E3F1 /* iPCFastForwardView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A36EA21B2B6DC70011E3F1 /* iPCFastForwardView.m */; };
 		C8A36EA61B2B70F70011E3F1 /* iPCMenuIconView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A36EA51B2B70F70011E3F1 /* iPCMenuIconView.m */; };
@@ -95,6 +96,8 @@
 		C8A090601731A54D006D1CCD /* iPCStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCStatusBar.m; sourceTree = "<group>"; };
 		C8A090721731EAC9006D1CCD /* iPCBatteryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCBatteryView.h; sourceTree = "<group>"; };
 		C8A090731731EACA006D1CCD /* iPCBatteryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCBatteryView.m; sourceTree = "<group>"; };
+		C8A0F3AE1E483B5100F5C0A4 /* iPCPermissionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCPermissionViewController.h; sourceTree = "<group>"; };
+		C8A0F3AF1E483B5100F5C0A4 /* iPCPermissionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCPermissionViewController.m; sourceTree = "<group>"; };
 		C8A36E9E1B2B6DB30011E3F1 /* iPCPlayPauseView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCPlayPauseView.h; sourceTree = "<group>"; };
 		C8A36E9F1B2B6DB30011E3F1 /* iPCPlayPauseView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCPlayPauseView.m; sourceTree = "<group>"; };
 		C8A36EA11B2B6DC70011E3F1 /* iPCFastForwardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCFastForwardView.h; sourceTree = "<group>"; };
@@ -192,6 +195,8 @@
 				C8EC8EC21B27AC2E00CC3252 /* iPCColorsManager.m */,
 				C8EC8EC41B28EA3600CC3252 /* iPCMusicPlayer.h */,
 				C8EC8EC51B28EA3600CC3252 /* iPCMusicPlayer.m */,
+				C8A0F3AE1E483B5100F5C0A4 /* iPCPermissionViewController.h */,
+				C8A0F3AF1E483B5100F5C0A4 /* iPCPermissionViewController.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -529,6 +534,7 @@
 				C8EC8EC61B28EA3600CC3252 /* iPCMusicPlayer.m in Sources */,
 				C88E20EA17928C6B00A7611E /* iPCColorLabel.m in Sources */,
 				C8C9FC1817304446007D7B9D /* iPCNowPlayingDisplay.m in Sources */,
+				C8A0F3B01E483B5100F5C0A4 /* iPCPermissionViewController.m in Sources */,
 				C8C9FC1D1730447E007D7B9D /* iPCView.m in Sources */,
 				C8C9FC241730538E007D7B9D /* iPCTableDisplay.m in Sources */,
 				C8C9FC271730564F007D7B9D /* iPCMenuDisplay.m in Sources */,
