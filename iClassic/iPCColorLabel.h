@@ -1,0 +1,13 @@
+//
+//  iPCColorLabel.h
+//  iClassic
+//
+//  Created by Emilio Peláez on 14/07/13.
+//  Copyright (c) 2013 Emilio Peláez. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface iPCColorLabel : UILabel
+
+@end

@@ -1,0 +1,16 @@
+PODS:
+  - AHEasing (1.2)
+  - ChameleonFramework (1.2.0)
+  - MarqueeLabel (2.2.4)
+
+DEPENDENCIES:
+  - AHEasing
+  - ChameleonFramework
+  - MarqueeLabel
+
+SPEC CHECKSUMS:
+  AHEasing: 847f583bcd83a2bb850e38ccdb26d22e2593f34d
+  ChameleonFramework: 4d6bf87fcaee176f487176cdccc4229637ec97f0
+  MarqueeLabel: 615576825a3087f1d1c15449fef52e00ff59dfd9
+
+COCOAPODS: 0.35.0

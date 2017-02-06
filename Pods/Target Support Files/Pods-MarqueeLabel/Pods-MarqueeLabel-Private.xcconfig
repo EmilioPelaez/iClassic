@@ -1,0 +1,5 @@
+#include "Pods-MarqueeLabel.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/MarqueeLabel" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AHEasing" "${PODS_ROOT}/Headers/Public/ChameleonFramework" "${PODS_ROOT}/Headers/Public/MarqueeLabel"
+OTHER_LDFLAGS = ${PODS_MARQUEELABEL_OTHER_LDFLAGS} -ObjC
+PODS_ROOT = ${SRCROOT}
