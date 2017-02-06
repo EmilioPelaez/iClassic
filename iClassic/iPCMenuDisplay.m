@@ -41,7 +41,7 @@
 									 @"Songs",
 									 @"Settings"];
 		
-		_itemsArrays = @[@"",	//	Dummy object to make it easier to work with the indices
+		_itemsArrays = @[[NSNull null],	//	Dummy object to make it easier to work with the indices
 										 [[MPMediaQuery playlistsQuery] collections],
 										 [[MPMediaQuery artistsQuery] collections],
 										 [[MPMediaQuery albumsQuery] collections],
