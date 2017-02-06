@@ -22,6 +22,8 @@
 #pragma mark Initialization
 
 -(void)awakeFromNib{
+	[super awakeFromNib];
+	
 	[self setBackgroundColor:[UIColor flatWhiteColorDark]];
 	
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];

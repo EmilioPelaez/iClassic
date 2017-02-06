@@ -24,7 +24,7 @@
 }
 
 -(BOOL)isNecessary{
-	if(![self.cachedDisplays count] == 0){
+	if([self.cachedDisplays count] == 0){
 		return self.navigationController != nil;
 	}
 	__block BOOL necessary = NO;
