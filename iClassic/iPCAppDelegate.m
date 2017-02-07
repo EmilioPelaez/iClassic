@@ -8,6 +8,7 @@
 
 #import "iPCAppDelegate.h"
 #import "iPCMainViewController.h"
+#import "UIDevice+Version.h"
 
 @implementation iPCAppDelegate
 
@@ -19,7 +20,7 @@
 	UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
 	UIViewController *mainController = [storyboard instantiateViewControllerWithIdentifier:@"Player Controller"];;
 	
-	if([MPMediaLibrary authorizationStatus] == MPMediaLibraryAuthorizationStatusAuthorized) {
+	if(![[UIDevice currentDevice] isiOS10] || [MPMediaLibrary authorizationStatus] == MPMediaLibraryAuthorizationStatusAuthorized) {
 		self.window.rootViewController = mainController;
 	} else {
 		[MPMediaLibrary requestAuthorization:^(MPMediaLibraryAuthorizationStatus status) {

@@ -13,6 +13,7 @@
 		C817C489178CF6A90061DE4A /* iPCThemesDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = C817C488178CF6A90061DE4A /* iPCThemesDisplay.m */; };
 		C819D59C1B278C4800839EC1 /* iPCDummySegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C819D59B1B278C4800839EC1 /* iPCDummySegue.m */; };
 		C835F33E178BE8FD0057A4F7 /* iPCColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = C835F33D178BE8BB0057A4F7 /* iPCColorView.m */; };
+		C83E79C41E4974CD00FE0394 /* UIDevice+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = C83E79C31E4974CD00FE0394 /* UIDevice+Version.m */; };
 		C83F45C21738D68800F0FA44 /* iPCSettingsDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = C83F45C11738D68800F0FA44 /* iPCSettingsDisplay.m */; };
 		C85911AA179A2EFD001CBF0F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C85911A9179A2EFD001CBF0F /* Images.xcassets */; };
 		C88E20E71792878A00A7611E /* iPCInfoBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C88E20E61792878A00A7611E /* iPCInfoBar.m */; };
@@ -72,6 +73,8 @@
 		C819D59B1B278C4800839EC1 /* iPCDummySegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCDummySegue.m; sourceTree = "<group>"; };
 		C835F33C178BE8BB0057A4F7 /* iPCColorView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iPCColorView.h; sourceTree = "<group>"; };
 		C835F33D178BE8BB0057A4F7 /* iPCColorView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iPCColorView.m; sourceTree = "<group>"; };
+		C83E79C21E4974CD00FE0394 /* UIDevice+Version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+Version.h"; sourceTree = "<group>"; };
+		C83E79C31E4974CD00FE0394 /* UIDevice+Version.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Version.m"; sourceTree = "<group>"; };
 		C83F45C01738D68800F0FA44 /* iPCSettingsDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCSettingsDisplay.h; sourceTree = "<group>"; };
 		C83F45C11738D68800F0FA44 /* iPCSettingsDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCSettingsDisplay.m; sourceTree = "<group>"; };
 		C85423CA179A2C91009E2074 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
@@ -197,6 +200,8 @@
 				C8EC8EC51B28EA3600CC3252 /* iPCMusicPlayer.m */,
 				C8A0F3AE1E483B5100F5C0A4 /* iPCPermissionViewController.h */,
 				C8A0F3AF1E483B5100F5C0A4 /* iPCPermissionViewController.m */,
+				C83E79C21E4974CD00FE0394 /* UIDevice+Version.h */,
+				C83E79C31E4974CD00FE0394 /* UIDevice+Version.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -523,6 +528,7 @@
 				C8C9FC1517304446007D7B9D /* iPCClickWheel.m in Sources */,
 				C8EC8EC31B27AC2E00CC3252 /* iPCColorsManager.m in Sources */,
 				C8C9FC1617304446007D7B9D /* iPCDisplay.m in Sources */,
+				C83E79C41E4974CD00FE0394 /* UIDevice+Version.m in Sources */,
 				C8EC8EC01B27A82A00CC3252 /* iPCSettingsTableCell.m in Sources */,
 				C8EC8EBD1B27A7C200CC3252 /* iPCDetailTableCell.m in Sources */,
 				C8A37DF91B2011CC009AF127 /* iPCFilteredQueryDisplay.m in Sources */,
