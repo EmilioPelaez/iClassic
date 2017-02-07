@@ -42,7 +42,7 @@ typedef enum{
 	CGFloat previousAngle;
 	
 	NSTimer *holdTimer;
-	CGPoint holdLocation;
+	CGPoint touchDownLocation;
 	BOOL holding;
 	iPCButton buttonHeld;
 }
@@ -169,7 +169,7 @@ typedef enum{
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
 	CGPoint location = [[touches anyObject] locationInView:self];
 	CGPoint offsetLocation = [self offsetPoint:location];
-	holdLocation = offsetLocation;
+	touchDownLocation = offsetLocation;
 	buttonHeld = iPCButtonNone;
 	
 	iPCLocationType locationType = [self locationTypeForOffsetPoint:offsetLocation];
@@ -191,32 +191,35 @@ typedef enum{
 }
 
 -(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-	if(!holding){
-		[self cancelTimer];
-		touchMoved = YES;
-		
-		CGPoint location = [[touches anyObject] locationInView:self];
-		CGPoint offsetLocation = [self offsetPoint:location];
-		
-		iPCLocationType locationType = [self locationTypeForOffsetPoint:offsetLocation];
-		switch (locationType) {
-			case iPCLocationTypeButton:
-			case iPCLocationTypeOutside:
-				[self.delegate finalMovementWithOffset:0];
-				tracking = NO;
-				break;
-			case iPCLocationTypeWheel:
-				if(tracking){
-					CGFloat newAngle = [self angleOfOffsetPoint:offsetLocation];
-					CGFloat difference = previousAngle - newAngle;
-					if(fabs(difference) < M_PI) [self.delegate movementWithOffset:difference];
-					previousAngle = newAngle;
-				}else{
-					tracking = YES;
-					previousAngle = [self angleOfOffsetPoint:offsetLocation];
-				}
-				break;
-		}
+	if(holding) return;
+	
+	CGPoint location = [[touches anyObject] locationInView:self];
+	CGPoint offsetLocation = [self offsetPoint:location];
+	
+	CGFloat movementDistance = CGPointGetMagnitude(CGPointSubstract(offsetLocation, touchDownLocation));
+	if(!touchMoved && movementDistance < 5) return;
+	
+	[self cancelTimer];
+	touchMoved = YES;
+	
+	iPCLocationType locationType = [self locationTypeForOffsetPoint:offsetLocation];
+	switch (locationType) {
+		case iPCLocationTypeButton:
+		case iPCLocationTypeOutside:
+			[self.delegate finalMovementWithOffset:0];
+			tracking = NO;
+			break;
+		case iPCLocationTypeWheel:
+			if(tracking){
+				CGFloat newAngle = [self angleOfOffsetPoint:offsetLocation];
+				CGFloat difference = previousAngle - newAngle;
+				if(fabs(difference) < M_PI) [self.delegate movementWithOffset:difference];
+				previousAngle = newAngle;
+			}else{
+				tracking = YES;
+				previousAngle = [self angleOfOffsetPoint:offsetLocation];
+			}
+			break;
 	}
 }
 
@@ -279,7 +282,6 @@ typedef enum{
 	}
 	
 	holding = NO;
-	touchMoved = NO;
 	[self touchesCancelled:touches withEvent:event];
 }
 
@@ -362,26 +364,25 @@ typedef enum{
 }
 
 -(void)holdTimerEnded{
-	if(buttonHeld != iPCButtonNone){
-		holding = YES;
-		
-		switch (buttonHeld) {
-			case iPCButtonTop:		[self.delegate topAction:iPCButtonActionBeginHold];
-				break;
-			case iPCButtonRight:	[self.musicDelegate rightAction:iPCButtonActionBeginHold];
-				break;
-			case iPCButtonBottom:	[self.musicDelegate bottomAction:iPCButtonActionBeginHold];
-				break;
-			case iPCButtonLeft:		[self.musicDelegate leftAction:iPCButtonActionBeginHold];
-				break;
-			case iPCButtonCenter:	[self.delegate centerAction:iPCButtonActionBeginHold];
-				break;
-			case iPCButtonNone:
-				break;
-		}
-	}
-	
 	holdTimer = nil;
+	
+	if(buttonHeld == iPCButtonNone) return;
+	holding = YES;
+	
+	switch (buttonHeld) {
+		case iPCButtonTop:		[self.delegate topAction:iPCButtonActionBeginHold];
+			break;
+		case iPCButtonRight:	[self.musicDelegate rightAction:iPCButtonActionBeginHold];
+			break;
+		case iPCButtonBottom:	[self.musicDelegate bottomAction:iPCButtonActionBeginHold];
+			break;
+		case iPCButtonLeft:		[self.musicDelegate leftAction:iPCButtonActionBeginHold];
+			break;
+		case iPCButtonCenter:	[self.delegate centerAction:iPCButtonActionBeginHold];
+			break;
+		case iPCButtonNone:
+			break;
+	}
 }
 
 -(void)cancelTimer{
