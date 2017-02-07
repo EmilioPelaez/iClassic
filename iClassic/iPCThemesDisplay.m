@@ -54,6 +54,8 @@
 }
 
 -(void)didSelectRow:(NSInteger)selectedRow{
+	[super didSelectRow:selectedRow];
+	
 	manager.themeColorIndex = selectedRow;
 }
 

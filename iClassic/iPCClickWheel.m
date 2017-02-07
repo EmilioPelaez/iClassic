@@ -45,6 +45,8 @@ typedef enum{
 	CGPoint touchDownLocation;
 	BOOL holding;
 	iPCButton buttonHeld;
+	
+	UIImpactFeedbackGenerator *feedbackGenerator;
 }
 
 -(void)initializeView;
@@ -114,6 +116,8 @@ typedef enum{
 	[self addSubview:next];
 	[self addSubview:playpause];
 	
+	feedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:UIImpactFeedbackStyleMedium];
+	
 	self.frame = self.frame;
 }
 
@@ -128,6 +132,7 @@ typedef enum{
 }
 
 -(void)tintColorDidChange{
+	[super tintColorDidChange];
 	[self setNeedsDisplay];
 }
 
@@ -167,6 +172,8 @@ typedef enum{
 #pragma mark - Touch
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+	[feedbackGenerator prepare];
+	
 	CGPoint location = [[touches anyObject] locationInView:self];
 	CGPoint offsetLocation = [self offsetPoint:location];
 	touchDownLocation = offsetLocation;
@@ -255,20 +262,28 @@ typedef enum{
 		iPCButtonAction action = holding ? iPCButtonActionEndHold : iPCButtonActionTap;
 		[self cancelTimer];
 		
+		if(!holding)
+			[feedbackGenerator impactOccurred];
+		
 		iPCLocationType locationType = [self locationTypeForPoint:location];
 		switch (locationType) {
-			case iPCLocationTypeButton:	[self.delegate centerAction:action];
+			case iPCLocationTypeButton:
+				[self.delegate centerAction:action];
 				break;
 			case iPCLocationTypeWheel:{
 				iPCButton button = [self buttonForPoint:location];
 				switch (button) {
-					case iPCButtonTop:		[self.delegate topAction:action];
+					case iPCButtonTop:
+						[self.delegate topAction:action];
 						break;
-					case iPCButtonRight:	[self.musicDelegate rightAction:action];
+					case iPCButtonRight:
+						[self.musicDelegate rightAction:action];
 						break;
-					case iPCButtonBottom:	[self.musicDelegate bottomAction:action];
+					case iPCButtonBottom:
+						[self.musicDelegate bottomAction:action];
 						break;
-					case iPCButtonLeft:		[self.musicDelegate leftAction:action];
+					case iPCButtonLeft:
+						[self.musicDelegate leftAction:action];
 						break;
 					case iPCButtonCenter:
 					case iPCButtonNone:
@@ -368,6 +383,8 @@ typedef enum{
 	
 	if(buttonHeld == iPCButtonNone) return;
 	holding = YES;
+	
+	[feedbackGenerator impactOccurred];
 	
 	switch (buttonHeld) {
 		case iPCButtonTop:		[self.delegate topAction:iPCButtonActionBeginHold];

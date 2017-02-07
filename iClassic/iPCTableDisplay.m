@@ -25,6 +25,16 @@ static NSString *CellID = @"Cell ID";
 
 @implementation iPCTableDisplay
 
++(UISelectionFeedbackGenerator *)feedbackGenerator{
+	static UISelectionFeedbackGenerator *generator;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+			generator = [[UISelectionFeedbackGenerator alloc] init];
+	});
+	
+	return generator;
+}
+
 -(void)viewDidLoad{
 	[super viewDidLoad];
 	
@@ -103,7 +113,9 @@ static NSString *CellID = @"Cell ID";
 	[self didSelectRow:selectedRow];
 }
 
--(void)didSelectRow:(NSInteger)row{}
+-(void)didSelectRow:(NSInteger)row{
+	[[self.class feedbackGenerator] selectionChanged];
+}
 
 -(NSInteger)visibleRows{
 	return (CGRectGetHeight(self.tableView.frame) / self.tableView.rowHeight) - 1;
