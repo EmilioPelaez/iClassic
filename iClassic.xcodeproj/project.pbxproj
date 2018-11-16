@@ -16,6 +16,7 @@
 		C83E79C41E4974CD00FE0394 /* UIDevice+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = C83E79C31E4974CD00FE0394 /* UIDevice+Version.m */; };
 		C83F45C21738D68800F0FA44 /* iPCSettingsDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = C83F45C11738D68800F0FA44 /* iPCSettingsDisplay.m */; };
 		C85911AA179A2EFD001CBF0F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C85911A9179A2EFD001CBF0F /* Images.xcassets */; };
+		C85E3403219E7FF400274674 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C85E3402219E7FF400274674 /* LaunchScreen.storyboard */; };
 		C88E20E71792878A00A7611E /* iPCInfoBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C88E20E61792878A00A7611E /* iPCInfoBar.m */; };
 		C88E20EA17928C6B00A7611E /* iPCColorLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C88E20E917928C6B00A7611E /* iPCColorLabel.m */; };
 		C8A0904C173076B0006D1CCD /* iPCPlaylistsDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = C8A0904B173076B0006D1CCD /* iPCPlaylistsDisplay.m */; };
@@ -39,7 +40,6 @@
 		C8C9FBF017303D8A007D7B9D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C8C9FBEE17303D8A007D7B9D /* InfoPlist.strings */; };
 		C8C9FBF217303D8A007D7B9D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C9FBF117303D8A007D7B9D /* main.m */; };
 		C8C9FBF617303D8A007D7B9D /* iPCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C9FBF517303D8A007D7B9D /* iPCAppDelegate.m */; };
-		C8C9FBF817303D8A007D7B9D /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = C8C9FBF717303D8A007D7B9D /* Default.png */; };
 		C8C9FC0317303DA0007D7B9D /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C9FC0217303DA0007D7B9D /* MediaPlayer.framework */; };
 		C8C9FC0817303F91007D7B9D /* iPCMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C9FC0617303F91007D7B9D /* iPCMainViewController.m */; };
 		C8C9FC1417304446007D7B9D /* CGMath.m in Sources */ = {isa = PBXBuildFile; fileRef = C8C9FC0B17304446007D7B9D /* CGMath.m */; };
@@ -79,6 +79,7 @@
 		C83F45C11738D68800F0FA44 /* iPCSettingsDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCSettingsDisplay.m; sourceTree = "<group>"; };
 		C85423CA179A2C91009E2074 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		C85911A9179A2EFD001CBF0F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C85E3402219E7FF400274674 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C88E20E51792878A00A7611E /* iPCInfoBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCInfoBar.h; sourceTree = "<group>"; };
 		C88E20E61792878A00A7611E /* iPCInfoBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCInfoBar.m; sourceTree = "<group>"; };
 		C88E20E817928C6B00A7611E /* iPCColorLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCColorLabel.h; sourceTree = "<group>"; };
@@ -122,7 +123,6 @@
 		C8C9FBF317303D8A007D7B9D /* iClassic-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iClassic-Prefix.pch"; sourceTree = "<group>"; };
 		C8C9FBF417303D8A007D7B9D /* iPCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iPCAppDelegate.h; sourceTree = "<group>"; };
 		C8C9FBF517303D8A007D7B9D /* iPCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iPCAppDelegate.m; sourceTree = "<group>"; };
-		C8C9FBF717303D8A007D7B9D /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		C8C9FC0217303DA0007D7B9D /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		C8C9FC0517303F91007D7B9D /* iPCMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCMainViewController.h; sourceTree = "<group>"; };
 		C8C9FC0617303F91007D7B9D /* iPCMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCMainViewController.m; sourceTree = "<group>"; };
@@ -333,7 +333,7 @@
 				C85423CA179A2C91009E2074 /* Icon@2x.png */,
 				C8C9FBED17303D8A007D7B9D /* iClassic-Info.plist */,
 				C8C9FBEE17303D8A007D7B9D /* InfoPlist.strings */,
-				C8C9FBF717303D8A007D7B9D /* Default.png */,
+				C85E3402219E7FF400274674 /* LaunchScreen.storyboard */,
 			);
 			name = Resources;
 			path = iClassic;
@@ -442,7 +442,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = iPC;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Emilio Peláez";
 				TargetAttributes = {
 					C8C9FBE117303D8A007D7B9D = {
@@ -473,8 +473,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C8C9FBF017303D8A007D7B9D /* InfoPlist.strings in Resources */,
-				C8C9FBF817303D8A007D7B9D /* Default.png in Resources */,
 				C80F78F11ADCCC2100EC3BF3 /* Main.storyboard in Resources */,
+				C85E3403219E7FF400274674 /* LaunchScreen.storyboard in Resources */,
 				C85911AA179A2EFD001CBF0F /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -584,12 +584,20 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -625,12 +633,20 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -657,11 +673,10 @@
 			baseConfigurationReference = 0D602662B58BDA1116BEABEC /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iClassic/iClassic-Prefix.pch";
 				INFOPLIST_FILE = "iClassic/iClassic-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.emiliopelaez.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -673,11 +688,10 @@
 			baseConfigurationReference = AE2077115D0800A7E7FDCF51 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iClassic/iClassic-Prefix.pch";
 				INFOPLIST_FILE = "iClassic/iClassic-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.emiliopelaez.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
