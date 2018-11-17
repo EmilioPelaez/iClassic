@@ -1,611 +1,900 @@
-
+//
 //  UIViewController+Chameleon.m
-
-/*
- 
- The MIT License (MIT)
- 
- Copyright (c) 2014-2015 Vicc Alexander.
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- 
- */
+//  Chameleon
+//
+//  Created by Vicc Alexander on 6/4/15.
+//  Copyright (c) 2015 Vicc Alexander. All rights reserved.
+//
 
 #import "UIViewController+Chameleon.h"
-#import "UIColor+Chameleon.h"
+#import <objc/runtime.h>
+
+#import "ChameleonConstants.h"
+#import "ChameleonEnums.h"
 #import "ChameleonMacros.h"
 
-#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#import "NSArray+Chameleon.h"
+#import "UIColor+Chameleon.h"
+#import "UIViewController+Chameleon.h"
+#import "UIView+ChameleonPrivate.h"
+#import "UILabel+Chameleon.h"
+#import "UIButton+Chameleon.h"
+#import "UIAppearance+Swift.h"
+
+@interface UIViewController ()
+
+@property (readwrite) BOOL shouldContrast;
+@property (readwrite) BOOL shouldUseLightContent;
+
+@end
 
 @implementation UIViewController (Chameleon)
 
-#pragma mark - Chameleon - Public Methods
 
-- (void)flatify {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
+#pragma mark - Runtime
+
+- (void)setShouldContrast:(BOOL)contrast {
     
-    [self flatifyNavigationBarItems];
-    
-    for (UIView *subview in self.view.subviews) {
-        [self flatifyColorsForView:subview withContrast:NO];
-        
-    }
+    NSNumber *number = [NSNumber numberWithBool:contrast];
+    objc_setAssociatedObject(self, @selector(shouldContrast), number, OBJC_ASSOCIATION_RETAIN);
 }
 
-- (void)flatifyAndContrast {
+- (BOOL)shouldContrast {
     
-    [self flatifyNavigationBarItems];
-    
-    for (UIView *subview in self.view.subviews) {
-        [self flatifyColorsForView:subview withContrast:YES];
-    }
+    NSNumber *number = objc_getAssociatedObject(self, @selector(shouldContrast));
+    return [number boolValue];
 }
 
-#pragma mark - Chameleon - Internal Methods
-
-- (void)flatifyNavigationBarItems {
+- (void)setShouldUseLightContent:(BOOL)shouldUseLightContent {
     
-    //Quick solution to flatifying navigation bars in view controllers (could be implemented better)
-    [self.navigationController.navigationBar setBarTintColor:FlatVersionOf(self.navigationController.navigationBar.barTintColor)];
-    [self.navigationController.navigationBar setTintColor:ContrastColorOf(self.navigationController.navigationBar.barTintColor, YES)];
+    NSNumber *number = [NSNumber numberWithBool:shouldUseLightContent];
+    objc_setAssociatedObject(self, @selector(shouldUseLightContent), number, OBJC_ASSOCIATION_RETAIN);
 }
 
-- (void)flatifyColorsForView:(UIView *)view withContrast:(BOOL)contrast {
+- (BOOL)shouldUseLightContent {
     
-    if (contrast == YES) {
+    NSNumber *number = objc_getAssociatedObject(self, @selector(shouldUseLightContent));
+    return [number boolValue];
+}
+
+#pragma mark - Swizzling
+
++ (void)load {
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         
-        //Flatify UIActivityIndicator
-        [self flatifyUIActivityIndicatorView:view];
+        Class class = [self class];
         
-        //Flatify UIBarButtonItem
-        [self flatifyUIBarButtonItemView:view];
+        SEL originalSelector = @selector(preferredStatusBarStyle);
+        SEL swizzledSelector = @selector(chameleon_preferredStatusBarStyle);
         
-        //Flatify UIControls
-        [self flatifyAndContrastUIButtonView:view];
-        [self flatifyUIDatePickerView:view];
-        [self flatifyUIPageControl:view];
-        [self flatifyAndContrastUISegmentedControl:view];
-        [self flatifyUISliderView:view];
-        [self flatifyAndContrastUIStepperView:view];
-        [self flatifyUISwitchView:view];
-        [self flatifyAndContrastUITextField:view];
+        Method originalMethod = class_getInstanceMethod(class, originalSelector);
+        Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
         
-        //Flatify UIImageView
-        [self flatifyUIImageView:view];
+        BOOL didAddMethod =
+        class_addMethod(class,
+                        originalSelector,
+                        method_getImplementation(swizzledMethod),
+                        method_getTypeEncoding(swizzledMethod));
         
-        //Flatify UILabels
-        [self flatifyAndContrastUILabelView:view];
+        if (didAddMethod) {
+            class_replaceMethod(class,
+                                swizzledSelector,
+                                method_getImplementation(originalMethod),
+                                method_getTypeEncoding(originalMethod));
+            
+        } else {
+            method_exchangeImplementations(originalMethod, swizzledMethod);
+        }
+    });
+}
+
+#pragma mark - Methods
+
+
+- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle {
+    
+    if (statusBarStyle == UIStatusBarStyleContrast) {
         
-        //Flatify UINavigationBar
-        [self flatifyAndContrastUINavigationBar:view];
-        
-        //Flatify UIProgressView
-        [self flatifyUIProgressView:view];
-        
-        //Flatify UISearchBar
-        [self flatifyUISearchBar:view];
-        
-        //Flatify UITabBar
-        [self flatifyUITabBar:view];
-        
-        //Flatify UITableView
-        [self flatifyUITableView:view];
-        
-        //Flatify UITextView
-        [self flatifyAndContrastUITextView:view];
-        
-        //Flatify UIToolbar
-        [self flatifyUIToolbar:view];
-        
-        //Flatify UIView
-        [self flatifyUIView:view];
-        
-        //Flatify UIViewController's Own View
-        [self flatifyUIView:self.view];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate) withObject:nil afterDelay:0.01];
+        self.shouldContrast = YES;
         
     } else {
         
-        //Flatify UIActivityIndicator
-        [self flatifyUIActivityIndicatorView:view];
-        
-        //Flatify UIBarButtonItem
-        [self flatifyUIBarButtonItemView:view];
-        
-        //Flatify UIControls
-        [self flatifyUIButtonView:view];
-        [self flatifyUIDatePickerView:view];
-        [self flatifyUIPageControl:view];
-        [self flatifyUISegmentedControl:view];
-        [self flatifyUISliderView:view];
-        [self flatifyUIStepperView:view];
-        [self flatifyUISwitchView:view];
-        [self flatifyUITextField:view];
-        
-        //Flatify UIImageView
-        [self flatifyUIImageView:view];
-        
-        //Flatify UILabels
-        [self flatifyUILabelView:view];
-        
-        //Flatify UINavigationBar
-        [self flatifyUINavigationBar:view];
-        
-        //Flatify UIProgressView
-        [self flatifyUIProgressView:view];
-        
-        //Flatify UISearchBar
-        [self flatifyUISearchBar:view];
-        
-        //Flatify UITabBar
-        [self flatifyUITabBar:view];
-        
-        //Flatify UITableView
-        [self flatifyUITableView:view];
-        
-        //Flatify UITextView
-        [self flatifyUITextView:view];
-        
-        //Flatify UIToolbar
-        [self flatifyUIToolbar:view];
-        
-        //Flatify UIView
-        [self flatifyUIView:view];
-        
-        //Flatify UIViewController's Own View
-        [self flatifyUIView:self.view];
-    }
-
-}
-
-#pragma mark - Chameleon Flatify UIActivityIndicatorView
-
-//UIActivityIndicatorView
-- (void)flatifyUIActivityIndicatorView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIActivityIndicatorView class]]) {
-        UIActivityIndicatorView *godActivityIndicatorView = (UIActivityIndicatorView *)view;
-        [godActivityIndicatorView setBackgroundColor:FlatVersionOf(godActivityIndicatorView.backgroundColor)];
-        [godActivityIndicatorView setColor:FlatVersionOf(godActivityIndicatorView.color)];
-        [godActivityIndicatorView setTintColor:FlatVersionOf(godActivityIndicatorView.tintColor)];
-    }
-}
-
-#pragma mark - Chameleon Flatify UIBarButtonItem
-
-//UIActivityIndicatorView
-- (void)flatifyUIBarButtonItemView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIBarButtonItem class]]) {
-        UIBarButtonItem *godBarButtonItem = (UIBarButtonItem *)view;
-        [godBarButtonItem setTintColor:FlatVersionOf(godBarButtonItem.tintColor)];
-    }
-}
-
-#pragma mark - Chameleon - Flatify UIControls
-
-//UIButton - Flatify Only
-- (void)flatifyUIButtonView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIButton class]]) {
-        UIButton *godButton = (UIButton *)view;
-        [godButton setBackgroundColor:FlatVersionOf(godButton.backgroundColor)];
-        [godButton setTintColor:FlatVersionOf(godButton.tintColor)];
-        [godButton setTitleColor:FlatVersionOf(godButton.titleLabel.textColor)
-                        forState:UIControlStateNormal];
-        [godButton setTitleShadowColor:FlatVersionOf(godButton.titleLabel.shadowColor)
-                              forState:UIControlStateNormal];
-    }
-}
-
-//UIButton - Flatify & Contrast Text / Image
-- (void)flatifyAndContrastUIButtonView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIButton class]]) {
-        UIButton *godButton = (UIButton *)view;
-        [godButton setBackgroundColor:FlatVersionOf(godButton.backgroundColor)];
-        [godButton setTitleShadowColor:FlatVersionOf(godButton.titleLabel.shadowColor)
-                              forState:UIControlStateNormal];
-        
-        //Check if backgroundColor exists
-        if (!godButton.backgroundColor) {
-            [godButton setTintColor:FlatVersionOf(godButton.tintColor)];
-            [godButton setTitleColor:FlatVersionOf(godButton.titleLabel.textColor)
-                            forState:UIControlStateNormal];
+        if (statusBarStyle == UIStatusBarStyleLightContent) {
+            
+            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate) withObject:nil afterDelay:0.01];
+            self.shouldUseLightContent = YES;
             
         } else {
-            [godButton setTintColor:ContrastColorOf(godButton.backgroundColor, YES)];
-            [godButton setTitleColor:ContrastColorOf(godButton.backgroundColor, YES)
-                            forState:UIControlStateNormal];
+            
+            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate) withObject:nil afterDelay:0.01];
+            self.shouldUseLightContent = NO;
         }
     }
+    
+    [self preferredStatusBarStyle];
 }
 
-//UIDatePicker - Flatify
-- (void)flatifyUIDatePickerView:(UIView *)view {
+- (UIStatusBarStyle)chameleon_preferredStatusBarStyle {
     
-    if ([view isKindOfClass:[UIDatePicker class]]) {
-        UIDatePicker *godDatePicker = (UIDatePicker *)view;
-        [godDatePicker setBackgroundColor:FlatVersionOf(godDatePicker.backgroundColor)];
-        [godDatePicker setTintColor:FlatVersionOf(godDatePicker.tintColor)];
-    }
-}
+    [self chameleon_preferredStatusBarStyle];
+    
+    if (self.shouldContrast) {
 
-//UIPageControl
-- (void)flatifyUIPageControl:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIPageControl class]]) {
-        UIPageControl *godPageControl = (UIPageControl *)view;
-        [godPageControl setBackgroundColor:FlatVersionOf(godPageControl.backgroundColor)];
-        [godPageControl setCurrentPageIndicatorTintColor:FlatVersionOf(godPageControl.currentPageIndicatorTintColor)];
-        [godPageControl setPageIndicatorTintColor:FlatVersionOf(godPageControl.pageIndicatorTintColor)];
-        [godPageControl setTintColor:FlatVersionOf(godPageControl.tintColor)];
-    }
-}
-
-//UISegmentedControl - Flatify Only
-- (void)flatifyUISegmentedControl:(UIView *)view {
-    
-    if ([view isKindOfClass:[UISegmentedControl class]]) {
-        UISegmentedControl *godSegmentedControl = (UISegmentedControl *)view;
-        [godSegmentedControl setBackgroundColor:FlatVersionOf(godSegmentedControl.backgroundColor)];
-        [godSegmentedControl setTintColor:FlatVersionOf(godSegmentedControl.tintColor)];
-    }
-}
-
-//UISegmentedControl - Flatify & Contrast
-- (void)flatifyAndContrastUISegmentedControl:(UIView *)view {
-    
-    if ([view isKindOfClass:[UISegmentedControl class]]) {
-        UISegmentedControl *godSegmentedControl = (UISegmentedControl *)view;
-        [godSegmentedControl setBackgroundColor:FlatVersionOf(godSegmentedControl.backgroundColor)];
-        if (!godSegmentedControl.backgroundColor) {
-            [godSegmentedControl setTintColor:FlatVersionOf(godSegmentedControl.tintColor)];
+        CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
+        UIView *topView = [self.view findTopMostViewForPoint:CGPointMake(CGRectGetMidX(statusBarFrame), 2)];
+        
+        return [self contrastingStatusBarStyleForColor:topView.backgroundColor];
+        
+    } else {
+        
+        if (self.shouldUseLightContent) {
+            return UIStatusBarStyleLightContent;
             
         } else {
-            [godSegmentedControl setTintColor:ContrastColorOf(godSegmentedControl.backgroundColor, YES)];
+            return [self chameleon_preferredStatusBarStyle];
         }
     }
 }
 
-//UISlider
-- (void)flatifyUISliderView:(UIView *)view {
+- (void)setThemeUsingPrimaryColor:(UIColor *)primaryColor
+                 withContentStyle:(UIContentStyle)contentStyle {
     
-    if ([view isKindOfClass:[UISlider class]]) {
-        UISlider *godSlider = (UISlider *)view;
-        [godSlider setBackgroundColor:FlatVersionOf(godSlider.backgroundColor)];
-        [godSlider setMinimumTrackTintColor:FlatVersionOf(godSlider.minimumTrackTintColor)];
-        [godSlider setMaximumTrackTintColor:FlatVersionOf(godSlider.maximumTrackTintColor)];
-    }
-}
-
-//UIStepper - Flatify Only
-- (void)flatifyUIStepperView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIStepper class]]) {
-        UIStepper *godStepper = (UIStepper *)view;
-        [godStepper setBackgroundColor:FlatVersionOf(godStepper.backgroundColor)];
-        [godStepper setTintColor:FlatVersionOf(godStepper.tintColor)];
-    }
-}
-
-//UIStepper - Flatify & Contrast
-- (void)flatifyAndContrastUIStepperView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIStepper class]]) {
-        UIStepper *godStepper = (UIStepper *)view;
-        [godStepper setBackgroundColor:FlatVersionOf(godStepper.backgroundColor)];
+    if (contentStyle == UIContentStyleContrast) {
         
-        if (!godStepper.backgroundColor) {
-            [godStepper setTintColor:FlatVersionOf(godStepper.tintColor)];
+        if ([ContrastColor(primaryColor, YES) isEqual:FlatWhite]) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
         } else {
-            [godStepper setTintColor:ContrastColorOf(godStepper.backgroundColor, YES)];
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
         }
-    }
-}
-
-//UISwitch
-- (void)flatifyUISwitchView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UISwitch class]]) {
-        UISwitch *godSwitch = (UISwitch *)view;
-        [godSwitch setThumbTintColor:FlatVersionOf(godSwitch.thumbTintColor)];
-        [godSwitch setOnTintColor:FlatVersionOf(godSwitch.onTintColor)];
-        [godSwitch setBackgroundColor:FlatVersionOf(godSwitch.backgroundColor)];
-        [godSwitch setTintColor:FlatVersionOf(godSwitch.tintColor)];
-    }
-}
-
-//UITextField - Flatify Only
-- (void)flatifyUITextField:(UIView *)view {
-    
-    if ([view isKindOfClass:[UITextField class]]) {
-        UITextField *godTextField = (UITextField *)view;
-        [godTextField setBackgroundColor:FlatVersionOf(godTextField.backgroundColor)];
-        [godTextField setTextColor:FlatVersionOf(godTextField.textColor)];
-        [godTextField setTintColor:FlatVersionOf(godTextField.tintColor)];
         
+    } else if (contentStyle == UIContentStyleLight) {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        
+    } else {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     }
+    
+    [[self class] customizeBarButtonItemWithPrimaryColor:primaryColor contentStyle:contentStyle];
+    [[self class] customizeButtonWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeNavigationBarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizePageControlWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeProgressViewWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSearchBarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSegmentedControlWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSliderWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeStepperWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSwitchWithPrimaryColor:primaryColor];
+    [[self class] customizeTabBarWithBarTintColor:FlatWhite andTintColor:primaryColor];
+    [[self class] customizeToolbarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeImagePickerControllerWithPrimaryColor:primaryColor withContentStyle:contentStyle];
 }
 
-//UITextField - Flatify & Contrast
-- (void)flatifyAndContrastUITextField:(UIView *)view {
+- (void)setThemeUsingPrimaryColor:(UIColor *)primaryColor
+               withSecondaryColor:(UIColor *)secondaryColor
+                  andContentStyle:(UIContentStyle)contentStyle {
     
-    if ([view isKindOfClass:[UITextField class]]) {
-        UITextField *godTextField = (UITextField *)view;
-        [godTextField setBackgroundColor:FlatVersionOf(godTextField.backgroundColor)];
-        [godTextField setTintColor:FlatVersionOf(godTextField.tintColor)];
+    if (contentStyle == UIContentStyleContrast) {
         
-        if (!godTextField.backgroundColor) {
-            [godTextField setTextColor:FlatVersionOf(godTextField.textColor)];
+        if ([ContrastColor(primaryColor, YES) isEqual:FlatWhite]) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
         } else {
-            [godTextField setTextColor:ContrastColorOf(godTextField.backgroundColor, YES)];
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
         }
-    }
-}
-
-#pragma mark - Chameleon - Flatify UIImageView
-
-//UIImageView
-- (void)flatifyUIImageView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UIImageView class]]) {
-        UIImageView *godImageView = (UIImageView *)view;
-        [godImageView setBackgroundColor:FlatVersionOf(godImageView.backgroundColor)];
-        [godImageView setTintColor:FlatVersionOf(godImageView.tintColor)];
-    }
-}
-
-#pragma mark - Chameleon - Flatify UILabel
-
-//UILabel - Flatify Only
-- (void)flatifyUILabelView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UILabel class]]) {
-        UILabel *godLabel = (UILabel *)view;
-        [godLabel setBackgroundColor:FlatVersionOf(godLabel.backgroundColor)];
-        [godLabel setTextColor:FlatVersionOf(godLabel.textColor)];
-        [godLabel setTintColor:FlatVersionOf(godLabel.tintColor)];
-        [godLabel setHighlightedTextColor:FlatVersionOf(godLabel.highlightedTextColor)];
-    }
-}
-
-//UILabel - Flatify & Contrast
-- (void)flatifyAndContrastUILabelView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UILabel class]]) {
-        UILabel *godLabel = (UILabel *)view;
-        [godLabel setBackgroundColor:FlatVersionOf(godLabel.backgroundColor)];
         
-        if (!godLabel.backgroundColor) {
-            [godLabel setTextColor:FlatVersionOf(godLabel.textColor)];
-            [godLabel setTintColor:FlatVersionOf(godLabel.tintColor)];
-            [godLabel setHighlightedTextColor:FlatVersionOf(godLabel.highlightedTextColor)];
-            
+    } else if (contentStyle == UIContentStyleLight) {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        
+    } else {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    }
+    
+    [[self class] customizeBarButtonItemWithPrimaryColor:primaryColor contentStyle:contentStyle];
+    [[self class] customizeButtonWithPrimaryColor:primaryColor secondaryColor:secondaryColor withContentStyle:contentStyle];
+    [[self class] customizeNavigationBarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizePageControlWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeProgressViewWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeSearchBarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSegmentedControlWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSliderWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeStepperWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSwitchWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeTabBarWithBarTintColor:FlatWhite andTintColor:primaryColor];
+    [[self class] customizeToolbarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeImagePickerControllerWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+}
+
+- (void)setThemeUsingPrimaryColor:(UIColor *)primaryColor
+               withSecondaryColor:(UIColor *)secondaryColor
+                    usingFontName:(NSString *)fontName
+                  andContentStyle:(UIContentStyle)contentStyle {
+    
+    if (contentStyle == UIContentStyleContrast) {
+        
+        if ([ContrastColor(primaryColor, YES) isEqual:FlatWhite]) {
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
         } else {
-            [godLabel setTextColor:ContrastColorOf(godLabel.backgroundColor, YES)];
-            [godLabel setTintColor:ContrastColorOf(godLabel.backgroundColor, YES)];
-            [godLabel setHighlightedTextColor:ComplementaryFlatColorOf(godLabel.backgroundColor)];
-        }
-    }
-}
-
-#pragma mark - Chameleon Flatify UINavigationBar
-
-//UINavigationBar - Flatify Only
-- (void)flatifyUINavigationBar:(UIView *)view {
-    
-    if ([view isKindOfClass:[UINavigationBar class]]) {
-        UINavigationBar *godNavigationBar = (UINavigationBar *)view;
-        [godNavigationBar setBackgroundColor:FlatVersionOf(godNavigationBar.backgroundColor)];
-        [godNavigationBar setBarTintColor:FlatVersionOf(godNavigationBar.barTintColor)];
-        [godNavigationBar setTintColor:FlatVersionOf(godNavigationBar.tintColor)];
-        [godNavigationBar.topItem.titleView setBackgroundColor:FlatVersionOf(godNavigationBar.topItem.titleView.backgroundColor)];
-        [godNavigationBar.topItem.titleView setTintColor:FlatVersionOf(godNavigationBar.topItem.titleView.tintColor)];
-    }
-    
-    if ([view isKindOfClass:[UINavigationItem class]]) {
-        
-        UINavigationItem *godNavigationItem = (UINavigationItem *)view;
-        [godNavigationItem.backBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.backBarButtonItem.tintColor)];
-        [godNavigationItem.leftBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.leftBarButtonItem.tintColor)];
-        [godNavigationItem.rightBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.rightBarButtonItem.tintColor)];
-        [godNavigationItem.titleView setBackgroundColor:FlatVersionOf(godNavigationItem.titleView.backgroundColor)];
-        [godNavigationItem.titleView setTintColor:FlatVersionOf(godNavigationItem.titleView.tintColor)];
-    }
-}
-
-//UINavigationBar - Flatify & Contrast
-- (void)flatifyAndContrastUINavigationBar:(UIView *)view {
-    
-    if ([view isKindOfClass:[UINavigationBar class]]) {
-        UINavigationBar *godNavigationBar = (UINavigationBar *)view;
-        [godNavigationBar setBackgroundColor:FlatVersionOf(godNavigationBar.backgroundColor)];
-        [godNavigationBar setBarTintColor:FlatVersionOf(godNavigationBar.barTintColor)];
-        [godNavigationBar setTintColor:FlatVersionOf(godNavigationBar.tintColor)];
-        [godNavigationBar.topItem.titleView setBackgroundColor:FlatVersionOf(godNavigationBar.topItem.titleView.backgroundColor)];
-        
-        if (godNavigationBar.barTintColor) {
-            [godNavigationBar.topItem.titleView setTintColor:ContrastColorOf(godNavigationBar.barTintColor, YES)];
-        } else {
-            if (godNavigationBar.backgroundColor) {
-                [godNavigationBar.topItem.titleView setTintColor:ContrastColorOf(godNavigationBar.backgroundColor, YES)];
-            } else {
-                [godNavigationBar.topItem.titleView setTintColor:FlatVersionOf(godNavigationBar.topItem.titleView.tintColor)];
-            }
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
         }
         
-    
+    } else if (contentStyle == UIContentStyleLight) {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        
+    } else {
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
     }
     
-    if ([view isKindOfClass:[UINavigationItem class]]) {
-        
-        UINavigationItem *godNavigationItem = (UINavigationItem *)view;
-        
-        if (godNavigationItem.titleView.backgroundColor) {
-            [godNavigationItem.backBarButtonItem setTintColor:ContrastColorOf(godNavigationItem.titleView.backgroundColor, YES)];
-            [godNavigationItem.leftBarButtonItem setTintColor:ContrastColorOf(godNavigationItem.titleView.backgroundColor, YES)];
-            [godNavigationItem.rightBarButtonItem setTintColor:ContrastColorOf(godNavigationItem.titleView.backgroundColor, YES)];
-            [godNavigationItem.titleView setBackgroundColor:FlatVersionOf(godNavigationItem.titleView.backgroundColor)];
-            [godNavigationItem.titleView setTintColor:ContrastColorOf(godNavigationItem.titleView.backgroundColor, YES)];
-        } else {
-            [godNavigationItem.backBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.backBarButtonItem.tintColor)];
-            [godNavigationItem.leftBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.leftBarButtonItem.tintColor)];
-            [godNavigationItem.rightBarButtonItem setTintColor:FlatVersionOf(godNavigationItem.rightBarButtonItem.tintColor)];
-            [godNavigationItem.titleView setBackgroundColor:FlatVersionOf(godNavigationItem.titleView.backgroundColor)];
-            [godNavigationItem.titleView setTintColor:FlatVersionOf(godNavigationItem.titleView.tintColor)];
+    [[UILabel appearance] setSubstituteFontName:fontName];
+    [[UIButton appearance] setSubstituteFontName:fontName];
+    
+    [[self class] customizeButtonWithPrimaryColor:primaryColor secondaryColor:secondaryColor withContentStyle:contentStyle];
+    [[self class] customizeBarButtonItemWithPrimaryColor:primaryColor fontName:fontName fontSize:18 contentStyle:contentStyle];
+    [[self class] customizeNavigationBarWithBarColor:primaryColor textColor:ContrastColor(primaryColor, YES) fontName:fontName fontSize:20 buttonColor:ContrastColor(primaryColor, YES)];
+    [[self class] customizePageControlWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeProgressViewWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeSearchBarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSegmentedControlWithPrimaryColor:primaryColor withFontName:fontName withFontSize:14 withContentStyle:contentStyle];
+    [[self class] customizeSliderWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeStepperWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeSwitchWithPrimaryColor:primaryColor andSecondaryColor:secondaryColor];
+    [[self class] customizeTabBarWithBarTintColor:FlatWhite andTintColor:primaryColor];
+    [[self class] customizeToolbarWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+    [[self class] customizeImagePickerControllerWithPrimaryColor:primaryColor withContentStyle:contentStyle];
+}
+
+#pragma mark - UIBarButtonItem
+
++ (void)customizeBarButtonItemWithPrimaryColor:(UIColor *)primaryColor
+                                  contentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
         }
     }
+    
+    [[UIBarButtonItem appearance] setTintColor:primaryColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:contentColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setTintColor:contentColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil] setTintColor:contentColor];
 }
 
-#pragma mark - Chameleon Flatify UIProgressView
-
-//UIProgressView
-- (void)flatifyUIProgressView:(UIView *)view {
++ (void)customizeBarButtonItemWithPrimaryColor:(UIColor *)primaryColor
+                                      fontName:(NSString *)fontName
+                                      fontSize:(float)fontSize
+                                  contentStyle:(UIContentStyle)contentStyle {
     
-    if ([view isKindOfClass:[UIProgressView class]]) {
-        UIProgressView *godProgressView = (UIProgressView *)view;
-        [godProgressView setBackgroundColor:FlatVersionOf(godProgressView.backgroundColor)];
-        [godProgressView setProgressTintColor:FlatVersionOf(godProgressView.progressTintColor)];
-        [godProgressView setTintColor:FlatVersionOf(godProgressView.tintColor)];
-        [godProgressView setTrackTintColor:FlatVersionOf(godProgressView.trackTintColor)];
-    }
-}
-
-#pragma mark - Chameleon Flatify UISearchBar
-
-//UISearchBar
-- (void)flatifyUISearchBar:(UIView *)view {
-    
-    if ([view isKindOfClass:[UISearchBar class]]) {
-        UISearchBar *godSearchBar = (UISearchBar *)view;
-        [godSearchBar setBackgroundColor:FlatVersionOf(godSearchBar.backgroundColor)];
-        [godSearchBar setBarTintColor:FlatVersionOf(godSearchBar.barTintColor)];
-        [godSearchBar setTintColor:FlatVersionOf(godSearchBar.tintColor)];
-    }
-    
-}
-
-#pragma mark - Chameleon Flatify UITabBar
-
-//UITabBar
-- (void)flatifyUITabBar:(UIView *)view {
-    
-    if ([view isKindOfClass:[UITabBar class]]) {
-        UITabBar *godTabBar = (UITabBar *)view;
-        [godTabBar setBackgroundColor:FlatVersionOf(godTabBar.backgroundColor)];
-        [godTabBar setBarTintColor:FlatVersionOf(godTabBar.barTintColor)];
-        
-        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            [godTabBar setSelectedImageTintColor:FlatVersionOf(godTabBar.selectedImageTintColor)];
-            #pragma clang diagnostic pop
-        } else {
-            [godTabBar setTintColor:FlatVersionOf(godTabBar.tintColor)];
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
         }
-        
-        [godTabBar setTintColor:FlatVersionOf(godTabBar.tintColor)];
-        
-    }
-    
-}
-
-#pragma mark - Chameleon Flatify UITableView
-
-//UITableView
-- (void)flatifyUITableView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UITableView class]]) {
-        UITableView *godTableView = (UITableView *)view;
-        [godTableView setBackgroundColor:FlatVersionOf(godTableView.backgroundColor)];
-        [godTableView setSectionIndexBackgroundColor:FlatVersionOf(godTableView.sectionIndexBackgroundColor)];
-        [godTableView setSectionIndexColor:FlatVersionOf(godTableView.sectionIndexColor)];
-        [godTableView setSectionIndexTrackingBackgroundColor:FlatVersionOf(godTableView.sectionIndexTrackingBackgroundColor)];
-        [godTableView setSeparatorColor:FlatVersionOf(godTableView.separatorColor)];
-        [godTableView setTintColor:FlatVersionOf(godTableView.tintColor)];
-        [godTableView.backgroundView setBackgroundColor:FlatVersionOf(godTableView.backgroundView.backgroundColor)];
-        [godTableView.backgroundView setTintColor:FlatVersionOf(godTableView.backgroundView.tintColor)];
-        [godTableView.inputAccessoryView setBackgroundColor:FlatVersionOf(godTableView.inputAccessoryView.backgroundColor)];
-        [godTableView.inputAccessoryView setTintColor:FlatVersionOf(godTableView.inputAccessoryView.tintColor)];
-        [godTableView.inputView setBackgroundColor:FlatVersionOf(godTableView.inputView.backgroundColor)];
-        [godTableView.inputView setTintColor:FlatVersionOf(godTableView.inputView.tintColor)];
-        [godTableView.tableFooterView setBackgroundColor:FlatVersionOf(godTableView.tableFooterView.backgroundColor)];
-        [godTableView.tableFooterView setTintColor:FlatVersionOf(godTableView.tableFooterView.tintColor)];
-        [godTableView.tableHeaderView setBackgroundColor:FlatVersionOf(godTableView.tableHeaderView.backgroundColor)];
-        [godTableView.tableHeaderView setTintColor:FlatVersionOf(godTableView.tableHeaderView.tintColor)];
-        [godTableView.viewForBaselineLayout setBackgroundColor:FlatVersionOf(godTableView.viewForBaselineLayout.backgroundColor)];
-        [godTableView.viewForBaselineLayout setTintColor:FlatVersionOf(godTableView.viewForBaselineLayout.backgroundColor)];
-    }
-}
-
-#pragma mark - Chameleon Flatify UITextView
-
-//UITextView - Flatify Only
-- (void)flatifyUITextView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UITextView class]]) {
-        UITextView *godTextView = (UITextView *)view;
-        [godTextView setBackgroundColor:FlatVersionOf(godTextView.backgroundColor)];
-        [godTextView setTextColor:FlatVersionOf(godTextView.textColor)];
-        [godTextView setTintColor:FlatVersionOf(godTextView.tintColor)];
-    }
-}
-
-//UITextView - Flatify & Contrat
-- (void)flatifyAndContrastUITextView:(UIView *)view {
-    
-    if ([view isKindOfClass:[UITextView class]]) {
-        UITextView *godTextView = (UITextView *)view;
-        [godTextView setBackgroundColor:FlatVersionOf(godTextView.backgroundColor)];
-        [godTextView setTintColor:FlatVersionOf(godTextView.tintColor)];
-        
-        if (godTextView.backgroundColor) {
-            [godTextView setTextColor:ContrastColorOf(godTextView.backgroundColor, YES)];
-        } else {
-            [godTextView setTextColor:FlatVersionOf(godTextView.textColor)];
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
         }
     }
-}
-
-#pragma mark - Chameleon Flatify UIToolBar
-
-//UIToolbar
-- (void)flatifyUIToolbar:(UIView *)view {
     
-    if ([view isKindOfClass:[UIToolbar class]]) {
-        UIToolbar *godToolbar = (UIToolbar *)view;
-        [godToolbar setBackgroundColor:FlatVersionOf(godToolbar.backgroundColor)];
-        [godToolbar setBarTintColor:FlatVersionOf(godToolbar.barTintColor)];
-        [godToolbar setTintColor:FlatVersionOf(godToolbar.tintColor)];
+    [[UIBarButtonItem appearance] setTintColor:primaryColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:contentColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setTintColor:contentColor];
+    [[UIBarButtonItem appearanceWhenContainedIn:[UIToolbar class], nil] setTintColor:contentColor];
+    
+    
+    if ([UIFont fontWithName:fontName size:fontSize]) {
+        [[UIBarButtonItem appearance] setTitleTextAttributes:@{ NSForegroundColorAttributeName:contentColor, NSFontAttributeName:[UIFont fontWithName:fontName size:fontSize]} forState:UIControlStateNormal];
     }
 }
 
-#pragma mark - Chameleon - Flatify UIView
+#pragma mark - UIButton
 
-//UIView
-- (void)flatifyUIView:(UIView *)view {
++ (void)customizeButtonWithPrimaryColor:(UIColor *)primaryColor
+                       withContentStyle:(UIContentStyle)contentStyle {
     
-    if ([view isKindOfClass:[UIView class]]) {
-        UIView *godView = (UIView *)view;
-        [godView setBackgroundColor:FlatVersionOf(godView.backgroundColor)];
-        [godView setTintColor:FlatVersionOf(godView.tintColor)];
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIButton appearance] setTintColor:contentColor];
+    [[UIButton appearance] setBackgroundColor:primaryColor];
+    
+    
+    [[UIButton appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UISearchBar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UINavigationBar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UINavigationBar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UIToolbar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UIToolbar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UIStepper class], nil] setTintColor:primaryColor];
+    [[UIButton appearanceWhenContainedIn:[UIStepper class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearance] setTitleShadowColor:ClearColor forState:UIControlStateNormal];
+    
+}
+
++ (void)customizeButtonWithPrimaryColor:(UIColor *)primaryColor
+                         secondaryColor:(UIColor *)secondaryColor
+                       withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    UIColor *secondaryContentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            secondaryContentColor = ContrastColor(secondaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            secondaryContentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            secondaryContentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            secondaryContentColor = ContrastColor(secondaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIButton appearance] setTintColor:secondaryContentColor];
+    [[UIButton appearance] setBackgroundColor:secondaryColor];
+    
+    
+    [[UIButton appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UISearchBar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UINavigationBar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UINavigationBar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UIToolbar class], nil] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedIn:[UIToolbar class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearanceWhenContainedIn:[UIStepper class], nil] setTintColor:primaryColor];
+    [[UIButton appearanceWhenContainedIn:[UIStepper class], nil] setBackgroundColor:ClearColor];
+    
+    [[UIButton appearance] setTitleShadowColor:ClearColor forState:UIControlStateNormal];
+    
+}
+
+#pragma mark - UIImagePickerController
+
++ (void)customizeImagePickerControllerWithPrimaryColor:(UIColor *)primaryColor withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    //Workaround for Swift http://stackoverflow.com/a/28765193
+    [[UIButton appearanceWhenContainedWithin:@[[UIView class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+    [[UIButton appearanceWhenContainedWithin:@[[UIView class],[UIImagePickerController class]]] setTintColor:ClearColor];
+    [[UIButton appearanceWhenContainedWithin:@[[UINavigationBar class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+    [[UIButton appearanceWhenContainedWithin:@[[UINavigationBar class],[UIImagePickerController class]]] setTintColor:contentColor];
+    [[UIButton appearanceWhenContainedWithin:@[[UITableViewCell class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+    
+    //[[UIButton appearanceWhenContainedInInstancesOfClasses:@[[UIView class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+    //[[UIButton appearanceWhenContainedInInstancesOfClasses:@[[UIView class],[UIImagePickerController class]]] setTintColor:contentColor];
+    //[[UIButton appearanceWhenContainedInInstancesOfClasses:@[[UINavigationBar class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+    //[[UIButton appearanceWhenContainedInInstancesOfClasses:@[[UINavigationBar class],[UIImagePickerController class]]] setTintColor:contentColor];
+    //[[UIButton appearanceWhenContainedInInstancesOfClasses:@[[UITableViewCell class],[UIImagePickerController class]]] setBackgroundColor:ClearColor];
+}
+
+#pragma mark - UILabel
+
++ (void)customizeLabelWithPrimaryColor:(UIColor *)primaryColor
+                              fontName:(NSString *)fontName
+                              fontSize:(CGFloat)fontSize
+                      withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UILabel appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setTextColor:contentColor];
+    [[UILabel appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setTextColor:contentColor];
+    
+    UIFont *font = [UIFont fontWithName:fontName size:fontSize];
+    
+    if (font) {
+        [[UILabel appearanceWhenContainedIn:[self class], nil] setFont:[UIFont fontWithName:fontName size:fontSize]];
+        [[UILabel appearanceWhenContainedIn:[self class], [UITextField class], nil] setFont:[UIFont fontWithName:fontName size:14]];
+        [[UILabel appearanceWhenContainedIn:[self class], [UIButton class], nil] setFont:[UIFont fontWithName:fontName size:18]];
     }
 }
 
+#pragma mark - UINavigationBar
+
++ (void)customizeNavigationBarWithPrimaryColor:(UIColor *)primaryColor
+                              withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:primaryColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTintColor:contentColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTitleTextAttributes:@{NSForegroundColorAttributeName:contentColor}];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setShadowImage:[UIImage new]];
+//    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+}
+
++ (void)customizeNavigationBarWithBarColor:(UIColor *)barColor
+                                 textColor:(UIColor *)textColor
+                               buttonColor:(UIColor *)buttonColor {
+    
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:barColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTintColor:buttonColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTitleTextAttributes:@{NSForegroundColorAttributeName:textColor}];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setShadowImage:[UIImage new]];
+//    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+}
+
++ (void)customizeNavigationBarWithBarColor:(UIColor *)barColor
+                                 textColor:(UIColor *)textColor
+                                  fontName:(NSString *)fontName
+                                  fontSize:(CGFloat)fontSize
+                               buttonColor:(UIColor *)buttonColor {
+    
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:barColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTintColor:buttonColor];
+    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setShadowImage:[UIImage new]];
+//    [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    
+    if ([UIFont fontWithName:fontName size:fontSize]) {
+        [[UINavigationBar appearanceWhenContainedIn:[self class], nil] setTitleTextAttributes:@{ NSForegroundColorAttributeName:textColor, NSFontAttributeName:[UIFont fontWithName:fontName size:fontSize] }];
+    }
+}
+
+#pragma mark - UIPageControl
+
++ (void)customizePageControlWithPrimaryColor:(UIColor *)primaryColor
+                            withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIPageControl appearanceWhenContainedIn:[self class], nil] setCurrentPageIndicatorTintColor:primaryColor];
+    [[UIPageControl appearanceWhenContainedIn:[self class], nil] setPageIndicatorTintColor:[primaryColor colorWithAlphaComponent:0.4]];
+    [[UIPageControl appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setCurrentPageIndicatorTintColor:contentColor];
+    [[UIPageControl appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setPageIndicatorTintColor:[contentColor colorWithAlphaComponent:0.4]];
+    [[UIPageControl appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setCurrentPageIndicatorTintColor:contentColor];
+    [[UIPageControl appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setPageIndicatorTintColor:[contentColor colorWithAlphaComponent:0.4]];
+}
+
+#pragma mark - UIProgressView
+
++ (void)customizeProgressViewWithPrimaryColor:(UIColor *)primaryColor
+                             withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIProgressView appearanceWhenContainedIn:[self class], nil] setProgressTintColor:primaryColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setProgressTintColor:contentColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setProgressTintColor:contentColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], nil] setTrackTintColor:[UIColor lightGrayColor]];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+}
+
++ (void)customizeProgressViewWithPrimaryColor:(UIColor *)primaryColor
+                            andSecondaryColor:(UIColor *)secondaryColor {
+    
+    [[UIProgressView appearanceWhenContainedIn:[self class], nil] setProgressTintColor:secondaryColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setProgressTintColor:secondaryColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setProgressTintColor:secondaryColor];
+    [[UIProgressView appearanceWhenContainedIn:[self class], nil] setTrackTintColor:[UIColor lightGrayColor]];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+    [[UIProgressView appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+}
+
+#pragma mark - UISearchBar
+
++ (void)customizeSearchBarWithPrimaryColor:(UIColor *)primaryColor withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UISearchBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:primaryColor];
+    [[UISearchBar appearanceWhenContainedIn:[self class], nil] setBackgroundColor:primaryColor];
+    [[UISearchBar appearanceWhenContainedIn:[self class], nil] setTintColor:contentColor];
+    [[UISearchBar appearanceWhenContainedIn:[self class], nil] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+}
+
+#pragma mark - UISegmentedControl
+
++ (void)customizeSegmentedControlWithPrimaryColor:(UIColor *)primaryColor
+                                 withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], nil] setTintColor:primaryColor];
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], [UINavigationBar class], nil]
+     setTintColor:contentColor];
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], [UIToolbar class], nil]
+     setTintColor:contentColor];
+}
+
++ (void)customizeSegmentedControlWithPrimaryColor:(UIColor *)primaryColor
+                                     withFontName:(NSString *)fontName
+                                     withFontSize:(CGFloat)fontSize
+                                 withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], nil] setTintColor:primaryColor];
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], [UINavigationBar class], nil]
+     setTintColor:contentColor];
+    [[UISegmentedControl appearanceWhenContainedIn:[self class], [UIToolbar class], nil]
+     setTintColor:contentColor];
+    
+    UIFont *font = [UIFont fontWithName:fontName size:fontSize];
+    if (font) {
+        [[UISegmentedControl appearanceWhenContainedIn:[self class], nil] setTitleTextAttributes:@{NSFontAttributeName:font}
+                                                                                        forState:UIControlStateNormal];
+    }
+}
+
+#pragma mark - UISlider
+
++ (void)customizeSliderWithPrimaryColor:(UIColor *)primaryColor
+                       withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UISlider appearanceWhenContainedIn:[self class], nil] setMinimumTrackTintColor:primaryColor];
+    [[UISlider appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setMinimumTrackTintColor:contentColor];
+    [[UISlider appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setMinimumTrackTintColor:contentColor];
+    [[UISlider appearanceWhenContainedIn:[self class], nil] setMaximumTrackTintColor:[UIColor lightGrayColor]];
+    [[UISlider appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setMaximumTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+    [[UISlider appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setMaximumTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+}
+
++ (void)customizeSliderWithPrimaryColor:(UIColor *)primaryColor
+                      andSecondaryColor:(UIColor *)secondaryColor {
+    
+    [[UISlider appearanceWhenContainedIn:[self class], nil] setMinimumTrackTintColor:secondaryColor];
+    [[UISlider appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setMinimumTrackTintColor:secondaryColor];
+    [[UISlider appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setMinimumTrackTintColor:secondaryColor];
+    [[UISlider appearanceWhenContainedIn:[self class], nil] setMaximumTrackTintColor:[UIColor lightGrayColor]];
+    [[UISlider appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setMaximumTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+    [[UISlider appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setMaximumTrackTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+}
+
+#pragma mark - UIStepper
+
++ (void)customizeStepperWithPrimaryColor:(UIColor *)primaryColor
+                        withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIStepper appearanceWhenContainedIn:[self class], nil] setTintColor:primaryColor];
+    [[UIStepper appearanceWhenContainedIn:[self class], [UINavigationBar class], nil]
+     setTintColor:contentColor];
+    [[UIStepper appearanceWhenContainedIn:[self class], [UIToolbar class], nil]
+     setTintColor:contentColor];
+}
+
+#pragma mark - UISwitch
+
++ (void)customizeSwitchWithPrimaryColor:(UIColor *)primaryColor {
+    
+    [[UISwitch appearanceWhenContainedIn:[self class], nil] setOnTintColor:primaryColor];
+    [[UISwitch appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setOnTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+    [[UISwitch appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setOnTintColor:[[primaryColor darkenByPercentage:0.25] flatten]];
+}
+
++ (void)customizeSwitchWithPrimaryColor:(UIColor *)primaryColor
+                      andSecondaryColor:(UIColor *)secondaryColor {
+    
+    [[UISwitch appearanceWhenContainedIn:[self class], nil] setOnTintColor:secondaryColor];
+    [[UISwitch appearanceWhenContainedIn:[self class], [UINavigationBar class], nil] setOnTintColor:secondaryColor];
+    [[UISwitch appearanceWhenContainedIn:[self class], [UIToolbar class], nil] setOnTintColor:secondaryColor];
+}
+
+#pragma mark - UITabBar
+
++ (void)customizeTabBarWithBarTintColor:(UIColor *)barTintColor
+                           andTintColor:(UIColor *)tintColor {
+    
+    [[UITabBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:barTintColor];
+    [[UITabBar appearanceWhenContainedIn:[self class], nil] setTintColor:tintColor];
+}
+
++ (void)customizeTabBarWithBarTintColor:(UIColor *)barTintColor
+                              tintColor:(UIColor *)tintColor
+                               fontName:(NSString *)fontName
+                               fontSize:(CGFloat)fontSize {
+    
+    [[UITabBar appearanceWhenContainedIn:[self class], nil] setBarTintColor:barTintColor];
+    [[UITabBar appearanceWhenContainedIn:[self class], nil] setTintColor:tintColor];
+    
+    UIFont *font = [UIFont fontWithName:fontName size:fontSize];
+    if (font) {
+        [[UITabBarItem appearanceWhenContainedIn:[self class], nil] setTitleTextAttributes:@{NSFontAttributeName:font}
+                                                                                  forState:UIControlStateNormal];
+    }
+}
+
+#pragma mark - UIToolbar
+
++ (void)customizeToolbarWithPrimaryColor:(UIColor *)primaryColor
+                        withContentStyle:(UIContentStyle)contentStyle {
+    
+    UIColor *contentColor;
+    switch (contentStyle) {
+        case UIContentStyleContrast: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+        case UIContentStyleLight: {
+            contentColor = [UIColor whiteColor];
+            break;
+        }
+        case UIContentStyleDark: {
+            contentColor = FlatBlackDark;
+            break;
+        }
+        default: {
+            contentColor = ContrastColor(primaryColor, NO);
+            break;
+        }
+    }
+    
+    [[UIToolbar appearanceWhenContainedIn:[self class], nil] setTintColor:contentColor];
+    [[UIToolbar appearanceWhenContainedIn:[self class], nil] setBarTintColor:primaryColor];
+    [[UIToolbar appearanceWhenContainedIn:[self class], nil] setClipsToBounds:YES];
+}
+
+
+#pragma mark - Private Methods
+
+- (UIStatusBarStyle)contrastingStatusBarStyleForColor:(UIColor *)backgroundColor {
+    
+    //Calculate Luminance
+    CGFloat luminance;
+    CGFloat red, green, blue;
+    
+    //Check for clear or uncalculatable color and assume white
+    if (![backgroundColor getRed:&red green:&green blue:&blue alpha:nil]) {
+        return UIStatusBarStyleDefault;
+    }
+    
+    //Relative luminance in colorimetric spaces - http://en.wikipedia.org/wiki/Luminance_(relative)
+    red *= 0.2126f; green *= 0.7152f; blue *= 0.0722f;
+    luminance = red + green + blue;
+    
+    return (luminance > 0.6f) ? UIStatusBarStyleDefault : UIStatusBarStyleLightContent;
+}
+
+#pragma GCC diagnostic pop
 
 @end

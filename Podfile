@@ -1,5 +1,10 @@
-platform :ios, "8.0"
+inhibit_all_warnings!
 
-pod 'MarqueeLabel'
-pod 'ChameleonFramework'
-pod 'AHEasing'
+target 'iClassic' do
+	platform :ios, "9.0"
+	
+	pod 'MarqueeLabel'
+	pod 'ChameleonFramework'
+	pod 'AHEasing', :git => 'https://github.com/warrenm/AHEasing.git', :branch => 'master'
+	
+end

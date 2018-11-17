@@ -1,16 +1,37 @@
 PODS:
-  - AHEasing (1.2)
-  - ChameleonFramework (1.2.0)
-  - MarqueeLabel (2.2.4)
+  - AHEasing (1.3.1)
+  - ChameleonFramework (2.1.0):
+    - ChameleonFramework/Default (= 2.1.0)
+  - ChameleonFramework/Default (2.1.0)
+  - MarqueeLabel (3.2.0):
+    - MarqueeLabel/ObjC (= 3.2.0)
+  - MarqueeLabel/ObjC (3.2.0)
 
 DEPENDENCIES:
-  - AHEasing
+  - AHEasing (from `https://github.com/warrenm/AHEasing.git`, branch `master`)
   - ChameleonFramework
   - MarqueeLabel
 
-SPEC CHECKSUMS:
-  AHEasing: 847f583bcd83a2bb850e38ccdb26d22e2593f34d
-  ChameleonFramework: 4d6bf87fcaee176f487176cdccc4229637ec97f0
-  MarqueeLabel: 615576825a3087f1d1c15449fef52e00ff59dfd9
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - ChameleonFramework
+    - MarqueeLabel
 
-COCOAPODS: 0.35.0
+EXTERNAL SOURCES:
+  AHEasing:
+    :branch: master
+    :git: https://github.com/warrenm/AHEasing.git
+
+CHECKOUT OPTIONS:
+  AHEasing:
+    :commit: bf764c912327ed5b57301ef343983802f11fc09f
+    :git: https://github.com/warrenm/AHEasing.git
+
+SPEC CHECKSUMS:
+  AHEasing: a47b04e264eb5f3a058b248d9aac6978257b6c42
+  ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
+  MarqueeLabel: 440a502b91a9179bd98f9fff00ba1150650a1c0e
+
+PODFILE CHECKSUM: 96a6b7ad51201ee6622c228c218ebe9b89eadc9e
+
+COCOAPODS: 1.5.3
