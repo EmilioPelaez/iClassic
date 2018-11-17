@@ -77,7 +77,6 @@
 		C83E79C31E4974CD00FE0394 /* UIDevice+Version.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+Version.m"; sourceTree = "<group>"; };
 		C83F45C01738D68800F0FA44 /* iPCSettingsDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCSettingsDisplay.h; sourceTree = "<group>"; };
 		C83F45C11738D68800F0FA44 /* iPCSettingsDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iPCSettingsDisplay.m; sourceTree = "<group>"; };
-		C85423CA179A2C91009E2074 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		C85911A9179A2EFD001CBF0F /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C85E3402219E7FF400274674 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C88E20E51792878A00A7611E /* iPCInfoBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPCInfoBar.h; sourceTree = "<group>"; };
@@ -330,7 +329,6 @@
 		C8C9FBEC17303D8A007D7B9D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C85423CA179A2C91009E2074 /* Icon@2x.png */,
 				C8C9FBED17303D8A007D7B9D /* iClassic-Info.plist */,
 				C8C9FBEE17303D8A007D7B9D /* InfoPlist.strings */,
 				C85E3402219E7FF400274674 /* LaunchScreen.storyboard */,
