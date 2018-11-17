@@ -32,10 +32,10 @@
 	self = [super init];
 	if(self){
 		
-		_colorNames = @[@"Blue",
+		_colorNames = @[@"Gray",
+										@"Blue",
 										@"Coffee",
 										@"Forest Green",
-										@"Gray",
 										@"Lime",
 										@"Magenta",
 										@"Mint",
@@ -135,4 +135,3 @@
 }
 
 @end
-
