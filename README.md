@@ -53,3 +53,6 @@ There are some things I think could be improved below.
 ## License
 I'm releasing this under the MIT License. Feel free to modify it, play with it, install it on your device, your friends' or your parents'.
 If you want to distribute it through a service like Cydia, let me know and I'll try to work something out.
+
+## Special Mentions
+Thanks to /u/frakman1 from /r/jailbreak for helping me with the Jailbreak installation instructions.
