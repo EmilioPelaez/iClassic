@@ -187,9 +187,9 @@
 -(void)viewWillAppear:(BOOL)animated{
 	[super viewWillAppear:animated];
 	
-	[self.songNameLabel resetLabel];
-	[self.artistLabel resetLabel];
-	[self.albumLabel resetLabel];
+	[self.songNameLabel restartLabel];
+	[self.artistLabel restartLabel];
+	[self.albumLabel restartLabel];
 }
 
 -(void)receivedOffset:(float)offset{
