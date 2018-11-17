@@ -48,10 +48,10 @@
 										@"Watermelon",
 										@"Yellow"];
 		
-		_lightColors = @[[UIColor flatBlueColor],
+		_lightColors = @[[UIColor flatGrayColor],
+										 [UIColor flatBlueColor],
 										 [UIColor flatCoffeeColor],
 										 [UIColor flatForestGreenColor],
-										 [UIColor flatGrayColor],
 										 [UIColor flatLimeColor],
 										 [UIColor flatMagentaColor],
 										 [UIColor flatMintColor],
@@ -64,21 +64,22 @@
 										 [UIColor flatWatermelonColor],
 										 [UIColor flatYellowColor]];
 		
-		_darkColors = @[[UIColor flatBlueColorDark],
-										 [UIColor flatCoffeeColorDark],
-										 [UIColor flatForestGreenColorDark],
-										 [UIColor flatGrayColorDark],
-										 [UIColor flatLimeColorDark],
-										 [UIColor flatMagentaColorDark],
-										 [UIColor flatMintColorDark],
-										 [UIColor flatOrangeColorDark],
-										 [UIColor flatPinkColorDark],
-										 [UIColor flatPurpleColorDark],
-										 [UIColor flatRedColorDark],
-										 [UIColor flatSkyBlueColorDark],
-										 [UIColor flatTealColorDark],
-										 [UIColor flatWatermelonColorDark],
-										 [UIColor flatYellowColorDark]];
+		_darkColors = @[[UIColor flatGrayColorDark],
+										[UIColor flatBlueColorDark],
+										[UIColor flatCoffeeColorDark],
+										[UIColor flatForestGreenColorDark],
+										
+										[UIColor flatLimeColorDark],
+										[UIColor flatMagentaColorDark],
+										[UIColor flatMintColorDark],
+										[UIColor flatOrangeColorDark],
+										[UIColor flatPinkColorDark],
+										[UIColor flatPurpleColorDark],
+										[UIColor flatRedColorDark],
+										[UIColor flatSkyBlueColorDark],
+										[UIColor flatTealColorDark],
+										[UIColor flatWatermelonColorDark],
+										[UIColor flatYellowColorDark]];
 		
 		self.themeColorIndex = [[NSUserDefaults standardUserDefaults] integerForKey:@"ThemeColorIndex"];
 		self.theme = [[NSUserDefaults standardUserDefaults] integerForKey:@"Theme"];
@@ -134,3 +135,4 @@
 }
 
 @end
+
