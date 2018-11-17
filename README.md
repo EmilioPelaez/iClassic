@@ -14,7 +14,7 @@ If you love iClassic and want to buy me a beer, [you can do it here](https://pay
 
 ## Installation
 ### Jailbroken Device
-- Go to the [Realases](https://github.com/EmilioPelaez/iClassic/releases) page and download the ipa file
+- Go to the [Releases](https://github.com/EmilioPelaez/iClassic/releases) page and download the ipa file
 - Install using [Impactor](http://www.cydiaimpactor.com)
 
 ### Non Jailbroken Device (Requires Xcode)
