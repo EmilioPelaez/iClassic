@@ -13,16 +13,9 @@ Let me know on Twitter ([@EmilioPelaez](https://twitter.com/EmilioPelaez)) when 
 If you love iClassic and want to buy me a beer, [you can do it here](https://paypal.me/EmilioPelaez).
 
 ## Installation
-### Jailbroken Device
-- Go to the [Releases](https://github.com/EmilioPelaez/iClassic/releases) page and download the ipa file
-- Install using [Impactor](http://www.cydiaimpactor.com)
-
-### Non Jailbroken Device (Requires Xcode)
-- Download and install Xcode.
-- Download project.
-- Open workspace file in Xcode.
-- Install to your device.
-- Google "install app from Xcode" because I'm probably missing a few steps.
+- Go to the [Releases](https://github.com/EmilioPelaez/iClassic/releases) page and follow the instructions there
+or
+- Build through Xcode to your device
 
 ## Code Considerations
 The code is petty old, some of it dates back to 2009. I've learned a **lot** in these 9 years, and I like to think that the code I write now is a lot better, but the code in iClassic is surprisingly solid.
@@ -55,4 +48,4 @@ I'm releasing this under the MIT License. Feel free to modify it, play with it, 
 If you want to distribute it through a service like Cydia, let me know and I'll try to work something out.
 
 ## Special Mentions
-Thanks to /u/frakman1 from /r/jailbreak for helping me with the Jailbreak installation instructions.
+Thanks to /u/frakman1 and the /r/jailbreak community for pointing me in the right direction with regards of the install instructions.
